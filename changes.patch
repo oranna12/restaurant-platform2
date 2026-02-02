@@ -1,0 +1,120 @@
+From f9f3b0b87317641a7547d953cba536e0c7860fe4 Mon Sep 17 00:00:00 2001
+From: oranna12 <orannassi@gmail.com>
+Date: Mon, 2 Feb 2026 11:48:29 +0200
+Subject: [PATCH 1/2] Fix async/await bugs and improve error handling for
+ Vercel deployment
+
+---
+ src/app/api/auth/callback/route.ts  |  2 +-
+ src/app/api/images/process/route.ts |  2 +-
+ src/lib/supabase/client.ts          | 12 ++++++++----
+ src/lib/supabase/server.ts          | 11 +++++++++--
+ 4 files changed, 19 insertions(+), 8 deletions(-)
+
+diff --git a/src/app/api/auth/callback/route.ts b/src/app/api/auth/callback/route.ts
+index 417f29f..ce7d0c1 100644
+--- a/src/app/api/auth/callback/route.ts
++++ b/src/app/api/auth/callback/route.ts
+@@ -7,7 +7,7 @@ export async function GET(request: Request) {
+   const next = searchParams.get('next') ?? '/dashboard'
+ 
+   if (code) {
+-    const supabase = createClient()
++    const supabase = await createClient()
+     const { error } = await supabase.auth.exchangeCodeForSession(code)
+     
+     if (!error) {
+diff --git a/src/app/api/images/process/route.ts b/src/app/api/images/process/route.ts
+index 3db2b62..484c39f 100644
+--- a/src/app/api/images/process/route.ts
++++ b/src/app/api/images/process/route.ts
+@@ -44,7 +44,7 @@ const CREDITS_PER_IMAGE = 5
+ 
+ export async function POST(request: NextRequest) {
+   try {
+-    const supabase = createClient()
++    const supabase = await createClient()
+     
+     // Check authentication
+     const { data: { user } } = await supabase.auth.getUser()
+diff --git a/src/lib/supabase/client.ts b/src/lib/supabase/client.ts
+index 792b457..5d4eb7e 100644
+--- a/src/lib/supabase/client.ts
++++ b/src/lib/supabase/client.ts
+@@ -1,8 +1,12 @@
+ import { createBrowserClient } from '@supabase/ssr'
+ 
+ export function createClient() {
+-  return createBrowserClient(
+-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+-  )
++  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
++  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
++
++  if (!supabaseUrl || !supabaseAnonKey) {
++    throw new Error('Missing Supabase environment variables')
++  }
++
++  return createBrowserClient(supabaseUrl, supabaseAnonKey)
+ }
+diff --git a/src/lib/supabase/server.ts b/src/lib/supabase/server.ts
+index 40633b0..e63c92a 100644
+--- a/src/lib/supabase/server.ts
++++ b/src/lib/supabase/server.ts
+@@ -4,9 +4,16 @@ import { cookies } from 'next/headers'
+ export async function createClient() {
+   const cookieStore = await cookies()
+ 
++  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
++  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
++
++  if (!supabaseUrl || !supabaseAnonKey) {
++    throw new Error('Missing Supabase environment variables')
++  }
++
+   return createServerClient(
+-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
++    supabaseUrl,
++    supabaseAnonKey,
+     {
+       cookies: {
+         getAll() {
+-- 
+2.39.5 (Apple Git-154)
+
+
+From 7ea51ac723a13283d161feeb9bf6a3db79cb54b1 Mon Sep 17 00:00:00 2001
+From: oranna12 <orannassi@gmail.com>
+Date: Mon, 2 Feb 2026 11:55:12 +0200
+Subject: [PATCH 2/2] Update Next.js to 14.2.22 to fix security vulnerability
+
+---
+ package.json | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/package.json b/package.json
+index 6f1d879..18d1f85 100644
+--- a/package.json
++++ b/package.json
+@@ -10,7 +10,7 @@
+     "db:generate": "supabase gen types typescript --project-id $SUPABASE_PROJECT_ID > src/types/database.types.ts"
+   },
+   "dependencies": {
+-    "next": "14.2.21",
++    "next": "^14.2.22",
+     "react": "^18.2.0",
+     "react-dom": "^18.2.0",
+     "@supabase/supabase-js": "^2.45.0",
+@@ -36,6 +36,6 @@
+     "postcss": "^8.4.0",
+     "autoprefixer": "^10.4.0",
+     "eslint": "^8.0.0",
+-    "eslint-config-next": "14.2.21"
++    "eslint-config-next": "^14.2.22"
+   }
+ }
+-- 
+2.39.5 (Apple Git-154)
+
