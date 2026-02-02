@@ -8,7 +8,7 @@ import { Eye, EyeOff, Loader2, ChefHat } from 'lucide-react'
 
 export default function LoginPage() {
   const router = useRouter()
-  const supabase = await createClient()
+  const supabase = createClient()
   
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
