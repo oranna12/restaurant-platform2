@@ -8,8 +8,6 @@ const nextConfig = {
       },
     ],
   },
-  // Fix for build issues with route groups
-  output: 'standalone',
 }
 
 module.exports = nextConfig
