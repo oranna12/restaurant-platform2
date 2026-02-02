@@ -34,7 +34,7 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [userName, setUserName] = useState('')
   
-  const supabase = createClient()
+  const supabase = await createClient()
 
   useEffect(() => {
     loadDashboardData()

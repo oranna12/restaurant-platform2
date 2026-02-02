@@ -14,7 +14,7 @@ interface HeaderProps {
 
 export default function Header({ restaurant, user }: HeaderProps) {
   const router = useRouter()
-  const supabase = createClient()
+  const supabase = await createClient()
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 

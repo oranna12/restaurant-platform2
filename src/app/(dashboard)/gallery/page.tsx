@@ -41,7 +41,7 @@ export default function GalleryPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'large'>('grid')
   const [selectedImage, setSelectedImage] = useState<SavedImage | null>(null)
   
-  const supabase = createClient()
+  const supabase = await createClient()
 
   useEffect(() => {
     loadImages()
