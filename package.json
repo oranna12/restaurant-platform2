@@ -10,7 +10,7 @@
     "db:generate": "supabase gen types typescript --project-id $SUPABASE_PROJECT_ID > src/types/database.types.ts"
   },
   "dependencies": {
-    "next": "14.2.21",
+    "next": "^14.2.22",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "@supabase/supabase-js": "^2.45.0",
@@ -36,6 +36,6 @@
     "postcss": "^8.4.0",
     "autoprefixer": "^10.4.0",
     "eslint": "^8.0.0",
-    "eslint-config-next": "14.2.21"
+    "eslint-config-next": "^14.2.22"
   }
 }
