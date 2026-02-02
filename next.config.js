@@ -8,12 +8,8 @@ const nextConfig = {
       },
     ],
   },
-  experimental: {
-    // Fix for client reference manifest issues
-    serverActions: {
-      bodySizeLimit: '2mb',
-    },
-  },
+  // Fix for build issues with route groups
+  output: 'standalone',
 }
 
 module.exports = nextConfig
