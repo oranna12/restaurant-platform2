@@ -86,7 +86,7 @@ export default function ImagesPage() {
   const [feedbackImageId, setFeedbackImageId] = useState<string | null>(null)
   const [feedbackText, setFeedbackText] = useState('')
 
-  const supabase = await createClient()
+  const supabase = createClient()
 
   useEffect(() => {
     loadCredits()

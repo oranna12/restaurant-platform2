@@ -44,7 +44,7 @@ const CREDITS_PER_IMAGE = 5
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient()
+    const supabase = createClient()
     
     // Check authentication
     const { data: { user } } = await supabase.auth.getUser()
